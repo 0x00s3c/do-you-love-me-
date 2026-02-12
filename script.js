@@ -5,41 +5,49 @@ const heartLoader = document.querySelector(".cssload-main");
 const yesBtn = document.querySelector(".js-yes-btn");
 const noBtn = document.querySelector(".js-no-btn");
 
-// Function to move the button
+/**
+ * Moves the NO button to a random position anywhere on the screen.
+ * Uses 'fixed' positioning to ensure it isn't trapped inside the 
+ * container's boundaries.
+ */
 const moveButton = () => {
-  // Get container dimensions
-  const containerRect = questionContainer.getBoundingClientRect();
-  const btnRect = noBtn.getBoundingClientRect();
+  // Calculate random positions based on total window size
+  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
 
-  // Calculate max available space so button stays inside the container
-  const maxX = containerRect.width - btnRect.width;
-  const maxY = containerRect.height - btnRect.height;
-
-  const newX = Math.floor(Math.random() * maxX);
-  const newY = Math.floor(Math.random() * maxY);
-
-  noBtn.style.position = "absolute"; // Ensure it can move
-  noBtn.style.left = `${newX}px`;
-  noBtn.style.top = `${newY}px`;
+  // Apply fixed positioning so coordinates are relative to the viewport
+  noBtn.style.position = "fixed";
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+  
+  // Optional: Bring it to the very front so it doesn't hide behind the GIF
+  noBtn.style.zIndex = "9999";
 };
 
-// Desktop: Mouse hover
+// Event Listeners for the NO button
 noBtn.addEventListener("mouseover", moveButton);
 
-// Mobile: Touch start
 noBtn.addEventListener("touchstart", (e) => {
-  e.preventDefault(); // Prevents accidental clicking/scrolling
+  // PreventDefault stops the mobile browser from triggering a 'click' 
+  // or zooming in when the user taps the button.
+  e.preventDefault(); 
   moveButton();
 });
 
-// Yes button functionality
+// YES button functionality
 yesBtn.addEventListener("click", () => {
+  // Hide the question and show the heart loader
   questionContainer.style.display = "none";
   heartLoader.style.display = "inherit";
 
+  // Wait 3 seconds before showing the final result
   setTimeout(() => {
     heartLoader.style.display = "none";
     resultContainer.style.display = "inherit";
-    if (gifResult) gifResult.play();
+    
+    // Play the result video/gif if it exists
+    if (gifResult) {
+      gifResult.play();
+    }
   }, 3000);
 });
